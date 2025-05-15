@@ -32,13 +32,13 @@ mount ${DISK}3 /mnt
 
 # Install base system
 echo "Installing base system..."
-pacstrap /mnt base linux linux-firmware nano vim sudo
+pacstrap /mnt base linux linux-firmware nano vim sudo zsh
 
 # Generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # Configure system
-arch-chroot /mnt bash <<EOF
+arch-chroot /mnt /bin/zsh <<EOF
 echo "$HOSTNAME" > /etc/hostname
 
 # Set timezone to London, UK
@@ -54,7 +54,7 @@ echo "LANG=en_GB.UTF-8" > /etc/locale.conf
 echo "KEYMAP=gb" > /etc/vconsole.conf
 
 # Create user
-useradd -m -G wheel -s /bin/bash $USERNAME
+useradd -m -G wheel -s /bin/zsh $USERNAME
 echo "$USERNAME:password" | chpasswd
 
 # Enable sudo for wheel group
