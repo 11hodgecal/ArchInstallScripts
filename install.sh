@@ -1,12 +1,16 @@
 #!/bin/bash
 
 # Define Variables
-DISK="/dev/sdX"  # CHANGE THIS TO YOUR DRIVE!
+DISK="sda"  # CHANGE THIS TO YOUR DRIVE!
 HOSTNAME="arch-machine"
 USERNAME="user"
 
 # Update system clock
 timedatectl set-ntp true
+
+# Adjust COW space size before installation
+echo "Setting COW space size..."
+mount -o remount,size=4G /run/archiso/cowspace
 
 # Partition the disk (GPT)
 echo "Partitioning disk..."
@@ -37,15 +41,17 @@ genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt bash <<EOF
 echo "$HOSTNAME" > /etc/hostname
 
-# Set timezone
+# Set timezone to London, UK
 ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
 hwclock --systohc
 
 # Set locale
-echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+echo "en_GB.UTF-8 UTF-8" > /etc/locale.gen
 locale-gen
-echo "LANG=en_US.UTF-8" > /etc/locale.conf
-echo "KEYMAP=us" > /etc/vconsole.conf
+echo "LANG=en_GB.UTF-8" > /etc/locale.conf
+
+# Set keyboard layout to British (GB)
+echo "KEYMAP=gb" > /etc/vconsole.conf
 
 # Create user
 useradd -m -G wheel -s /bin/bash $USERNAME
