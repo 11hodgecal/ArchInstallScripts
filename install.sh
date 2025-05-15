@@ -61,14 +61,16 @@ echo "$USERNAME:password" | chpasswd
 echo "%wheel ALL=(ALL) ALL" > /etc/sudoers.d/wheel
 
 # Install bootloader
-pacman -Syu --noconfirm grub efibootmgr
-mkdir /boot/efi
-mount ${DISK}1 /boot/efi
-grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi
+pacman -Syu --noconfirm grub efibootmgr os-prober
+mkdir -p /mnt/boot/efi
+mount /dev/${DISK}1 /mnt/boot/efi
+grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi --recheck --no-floppy --root-directory=/mnt
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Enable networking
 systemctl enable NetworkManager
+systemctl enable grub-initrd
+
 EOF
 
 echo "Installation complete! Reboot and enjoy your Arch system."
